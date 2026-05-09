@@ -125,6 +125,7 @@ public:
       return false;
     case 'a':
     case 'f':
+    case 'q':
       Info.setAllowsRegister();
       return true;
     }

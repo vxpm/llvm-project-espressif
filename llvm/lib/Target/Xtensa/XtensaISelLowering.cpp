@@ -451,6 +451,7 @@ XtensaTargetLowering::getConstraintType(StringRef Constraint) const {
     case 'd':
     case 'f':
     case 'r':
+    case 'q':
       return C_RegisterClass;
     default:
       break;
@@ -482,6 +483,10 @@ XtensaTargetLowering::getSingleConstraintMatchWeight(
     if (Ty->isIntegerTy())
       Weight = CW_Register;
     break;
+  case 'q':
+    if (Ty->isIntOrIntVectorTy() && Ty->getPrimitiveSizeInBits() == 128)
+      Weight = CW_Register;
+    break;
   case 'f':
     if (Ty->isFloatingPointTy())
       Weight = CW_Register;
@@ -505,6 +510,9 @@ XtensaTargetLowering::getRegForInlineAsmConstraint(
     case 'f': // Floating-point register
       if (Subtarget.hasSingleFloat())
         return std::make_pair(0U, &Xtensa::FPRRegClass);
+    case 'q': // 128-bit integer vector register
+      if (Subtarget.hasESP32S3Ops())
+          return std::make_pair(0U, &Xtensa::QRRegClass);
     }
   }
   return TargetLowering::getRegForInlineAsmConstraint(TRI, Constraint, VT);
